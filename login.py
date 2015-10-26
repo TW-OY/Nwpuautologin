@@ -2,14 +2,65 @@
 # encoding: utf-8
 
 
+import base64
 import requests
+import socket
+import platform
+import fcntl
+import struct
+import time
 
 
+IP_pre = '10.25'
+Time_format = "%Y-%m-%d %H:%M:%S"
 
-def login():
 
-    post_data = {'userName': '2012301972',
-                 'userPwd': 'aGVoZWRh',
+def ping():
+
+    ping_response = requests.get('http://www.baidu.com', timeout=2)
+    if ping_response.headers['connection'] == 'close':
+        return False
+    else:
+        return True
+
+
+def print_time():
+
+    print time.strftime(Time_format,time.localtime()) + '  ',
+
+
+def get_ip_address_win():
+    #  win平台下的ip地址获取方法
+
+    local_ip_list = socket.gethostbyname_ex(socket.gethostname())
+    for local_ip in local_ip_list:
+        if local_ip in local_ip:
+            print(u"欢迎使用NWPU-WLAN-AUTOLOGIN")
+            return True
+        else:
+            print(u"您似乎没有连接到NWPU-WLAN哦")
+            return False
+
+
+def get_ip_address_linux(ifname):
+    #    linux平台下的ip地址获取方法
+
+    socket_temp = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    local_ip= socket.inet_ntoa(fcntl.ioctl(socket_temp.fileno(), 0x8915, struct.pack('256s', ifname[:15].encode('utf-8')))[20:24])
+    if IP_pre in local_ip:
+        print_time()
+        print(u"欢迎使用NWPU-WLAN-AUTOLOGIN")
+        return True
+    else:
+        print_time()
+        print(u"您似乎没有连接到NWPU-WLAN哦")
+        return False
+
+
+def login(username,passwd):
+
+    post_data = {'userName': username,
+                 'userPwd':base64.b64encode(passwd),
                  'serviceTypeHIDE': '',
                  'serviceType': '',
                  'userurl': '',
@@ -45,7 +96,28 @@ def login():
     #  cookies = s.get(WiFiurl)
     #  print (cookies.cookies)
     response = s.post(url=WiFiurl, data=post_data, headers=custom_headers, cookies=cookie, allow_redirects=True)
-    print (response.cookies)
-    print (response.status_code)
-    print (response.headers)
-login()
+
+
+def main():
+
+    if platform.system() == 'Linux':
+        result = get_ip_address_linux("wlan0")
+    if platform.system() == 'Windows':
+        result = get_ip_address_win()
+    if result:
+        print_time()
+        main_username = raw_input('请输入您的学号\n')
+        print_time()
+        main_passwd = raw_input('请输入您的密码\n')
+        login(main_username,main_passwd)
+    while True:
+        if ping():
+            pass
+        else:
+            print_time()
+            print(u"您已掉线正在重连...")
+            login(main_username,main_passwd)
+
+
+if __name__ == '__main__':
+    main()
