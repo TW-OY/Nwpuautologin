@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python
 # encoding: utf-8
 
 
@@ -26,20 +26,20 @@ def ping():
 
 def print_time():
 
-    print time.strftime(Time_format,time.localtime()) + '  ',
+    print (time.strftime(Time_format,time.localtime()) + '  ', end='')
 
 
-def get_ip_address_win():
-    #  win平台下的ip地址获取方法
+#  def get_ip_address_win():
+    #  #  win平台下的ip地址获取方法
 
-    local_ip_list = socket.gethostbyname_ex(socket.gethostname())
-    for local_ip in local_ip_list:
-        if local_ip in local_ip:
-            print(u"欢迎使用NWPU-WLAN-AUTOLOGIN")
-            return True
-        else:
-            print(u"您似乎没有连接到NWPU-WLAN哦")
-            return False
+    #  local_ip_list = socket.gethostbyname_ex(socket.gethostname())
+    #  for local_ip in local_ip_list:
+        #  if local_ip in local_ip:
+            #  print(u"欢迎使用NWPU-WLAN-AUTOLOGIN")
+            #  return True
+        #  else:
+            #  print(u"您似乎没有连接到NWPU-WLAN哦")
+            #  return False
 
 
 def get_ip_address_linux(ifname):
@@ -59,8 +59,9 @@ def get_ip_address_linux(ifname):
 
 def login(username,passwd):
 
+    encode_passwd = base64.b64encode(passwd.encode())
     post_data = {'userName': username,
-                 'userPwd':base64.b64encode(passwd),
+                 'userPwd': encode_passwd.decode(),
                  'serviceTypeHIDE': '',
                  'serviceType': '',
                  'userurl': '',
@@ -92,31 +93,44 @@ def login(username,passwd):
                       'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'}
     WiFiurl = 'http://202.117.80.138:8080/portal/pws?t=li'
     s = requests.Session()
-    cookie = {'i_p_pl': 'JTdCJTIyZXJyb3JOdW1iZXIlMjIlM0ElMjIxJTIyJTJDJTIybmV4dFVybCUyMiUzQSUyMmh0dHAlM0ElMkYlMkYyMDIuMTE3LjgwLjEzOCUzQTgwODAlMkZwb3J0YWwlMkZ0ZW1wbGF0ZVBhZ2UlMkYyMDE0MDIyNTIzMDYzNjMwNSUyRmxvZ2luX2N1c3RvbS5qc3AlMjIlMkMlMjJxdWlja0F1dGglMjIlM0FmYWxzZSUyQyUyMmNsaWVudExhbmd1YWdlJTIyJTNBJTIyQ2hpbmVzZSUyMiUyQyUyMmFzc2lnbklwVHlwZSUyMiUzQTAlMkMlMjJpTm9kZVB3ZE5lZWRFbmNyeXB0JTIyJTNBMSUyQyUyMm5hc0lwJTIyJTNBJTIyJTIyJTJDJTIydmFsQ29kZVR5cGUlMjIlM0ElMjIwJTIyJTJDJTIyYnlvZFNlcnZlcklwJTIyJTNBJTIyMjAyLjExNy44MC4xMzglMjIlMkMlMjJieW9kU2VydmVySHR0cFBvcnQlMjIlM0ElMjI4MDgwJTIyJTJDJTIyaWZUcnlVc2VQb3B1cFdpbmRvdyUyMiUzQWZhbHNlJTJDJTIydWFtSW5pdEN1c3RvbSUyMiUzQSUyMjElMjIlMkMlMjJjdXN0b21DZmclMjIlM0ElMjJNVEE0JTIyJTdE'}
+    cookies = {'i_p_pl': 'JTdCJTIyZXJyb3JOdW1iZXIlMjIlM0ElMjIxJTIyJTJDJTIybmV4dFVybCUyMiUzQSUyMmh0dHAlM0ElMkYlMkYyMDIuMTE3LjgwLjEzOCUzQTgwODAlMkZwb3J0YWwlMkZ0ZW1wbGF0ZVBhZ2UlMkYyMDE0MDIyNTIzMDYzNjMwNSUyRmxvZ2luX2N1c3RvbS5qc3AlMjIlMkMlMjJxdWlja0F1dGglMjIlM0FmYWxzZSUyQyUyMmNsaWVudExhbmd1YWdlJTIyJTNBJTIyQ2hpbmVzZSUyMiUyQyUyMmFzc2lnbklwVHlwZSUyMiUzQTAlMkMlMjJpTm9kZVB3ZE5lZWRFbmNyeXB0JTIyJTNBMSUyQyUyMm5hc0lwJTIyJTNBJTIyJTIyJTJDJTIydmFsQ29kZVR5cGUlMjIlM0ElMjIwJTIyJTJDJTIyYnlvZFNlcnZlcklwJTIyJTNBJTIyMjAyLjExNy44MC4xMzglMjIlMkMlMjJieW9kU2VydmVySHR0cFBvcnQlMjIlM0ElMjI4MDgwJTIyJTJDJTIyaWZUcnlVc2VQb3B1cFdpbmRvdyUyMiUzQWZhbHNlJTJDJTIydWFtSW5pdEN1c3RvbSUyMiUzQSUyMjElMjIlMkMlMjJjdXN0b21DZmclMjIlM0ElMjJNVEE0JTIyJTdE'}
     #  cookies = s.get(WiFiurl)
     #  print (cookies.cookies)
-    response = s.post(url=WiFiurl, data=post_data, headers=custom_headers, cookies=cookie, allow_redirects=True)
+    cookies_no ={'i_p_pl': 'i_p_pl=JTdCJTIycG9ydFNlcnZJbmNsdWRlRmFpbGVkUmVhc29uJTIyJTNBJTIyJUU2JTk3JUEwJUU1JThGJUFGJUU3JTk0JUE4JUU1JTg5JUE5JUU0JUJEJTk5JUU2JUI1JTgxJUU5JTg3JThGJTIxJTIyJTJDJTIyZV9jJTIyJTNBJTIycG9ydFNlcnZJbmNsdWRlRmFpbGVkQ29kZSUyMiUyQyUyMmVfZCUyMiUzQSUyMnBvcnRTZXJ2SW5jbHVkZUZhaWxlZFJlYXNvbiUyMiUyQyUyMmVycm9yTnVtYmVyJTIyJTNBJTIyNyUyMiU3RA'}
+    response = s.post(url=WiFiurl, data=post_data, headers=custom_headers, cookies=cookies, allow_redirects=True)
+    if response.cookies == cookies_no:
+        print (u"密码似乎输错了或者您流量已经耗尽请重试")
+        return False
+    else:
+        print (u"登录成功")
+        return True
 
 
 def main():
 
-    if platform.system() == 'Linux':
-        result = get_ip_address_linux("wlan0")
-    if platform.system() == 'Windows':
-        result = get_ip_address_win()
-    if result:
-        print_time()
-        main_username = raw_input('请输入您的学号\n')
-        print_time()
-        main_passwd = raw_input('请输入您的密码\n')
-        login(main_username,main_passwd)
+    #  if platform.system() == 'Linux':
+    result = get_ip_address_linux("wlan0")
+    #  if platform.system() == 'Windows':
+        #  result = get_ip_address_win()
+    if result == False:
+        while True:
+            time.sleep(10)
+            if get_ip_address_linux('wlan0'):
+                break
+    print_time()
+    main_username = input('请输入您的学号\n')
+    print_time()
+    main_passwd = input('请输入您的密码\n')
+    login_result = login(main_username, main_passwd)
+    while login_result == False:
+        login_result = login(main_username, main_passwd)
     while True:
         if ping():
             pass
         else:
             print_time()
             print(u"您已掉线正在重连...")
-            login(main_username,main_passwd)
+            login(main_username, main_passwd)
 
 
 if __name__ == '__main__':
