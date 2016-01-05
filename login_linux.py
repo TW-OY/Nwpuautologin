@@ -5,10 +5,10 @@
 import base64
 import requests
 import socket
-import platform
 import fcntl
 import struct
 import time
+import os
 
 
 IP_pre = '10.25'
@@ -16,30 +16,15 @@ Time_format = "%Y-%m-%d %H:%M:%S"
 
 
 def ping():
-
-    ping_response = requests.get('http://www.baidu.com', timeout=2)
-    if ping_response.headers['connection'] == 'close':
-        return False
-    else:
+    result = os.system("ping -c 2 www.baidu.com")
+    if result == 0:
         return True
+    return False
 
 
 def print_time():
 
-    print (time.strftime(Time_format,time.localtime()) + '  ', end='')
-
-
-#  def get_ip_address_win():
-    #  #  win平台下的ip地址获取方法
-
-    #  local_ip_list = socket.gethostbyname_ex(socket.gethostname())
-    #  for local_ip in local_ip_list:
-        #  if local_ip in local_ip:
-            #  print(u"欢迎使用NWPU-WLAN-AUTOLOGIN")
-            #  return True
-        #  else:
-            #  print(u"您似乎没有连接到NWPU-WLAN哦")
-            #  return False
+    print (time.strftime(Time_format, time.localtime()) + '    ')
 
 
 def get_ip_address_linux(ifname):
@@ -57,7 +42,7 @@ def get_ip_address_linux(ifname):
         return False
 
 
-def login(username,passwd):
+def login(username, passwd):
 
     encode_passwd = base64.b64encode(passwd.encode())
     post_data = {'userName': username,
@@ -96,10 +81,10 @@ def login(username,passwd):
     #  cookies = s.get(WiFiurl)
     #  print (cookies.cookies)
     response = s.post(url=WiFiurl, data=post_data, headers=custom_headers, allow_redirects=True)
-    if response.headers["content-length"] == '318' :
+    if response.headers["content-length"] == '318':
         print (u"您流量已经耗尽,请您换个帐号登录")
         return 1
-    if response.headers["content-length"] == '394' :
+    if response.headers["content-length"] == '394':
         print (u"您的密码错误,请重试")
         return 2
     else:
@@ -110,30 +95,30 @@ def login(username,passwd):
 def main():
 
     #  if platform.system() == 'Linux':
-    result = get_ip_address_linux("wlan0")
-    break_tag = 0
+    # result = get_ip_address_linux("wlan0")
+    #break_tag = 0
     #  if platform.system() == 'Windows':
         #  result = get_ip_address_win()
-    if result == False:
-        while True:
-            time.sleep(10)
-            if get_ip_address_linux('wlan0'):
-                break
+    #if result == False:
+    #    while True:
+    #        time.sleep(10)
+    #        if get_ip_address_linux('wlan0'):
+    #            break
     print_time()
     main_username = input('请输入您的学号\n')
     print_time()
-    main_passwd = input('请输入您的密码\n')
+    main_passwd = raw_input('请输入您的密码\n')
     login_result = login(main_username, main_passwd)
     while True:
         while login_result == 1:
             print_time()
             main_username = input(u"请再输入您的学号\n")
             print_time()
-            main_passwd = input(u"请再输入您的密码\n")
+            main_passwd = raw_input(u"请再输入您的密码\n")
             login_result = login(main_username, main_passwd)
         while login_result == 2:
             print_time()
-            main_passwd = input(u"请再输入您的密码\n")
+            main_passwd = raw_input(u"请再输入您的密码\n")
             login_result = login(main_username, main_passwd)
         while login_result == 3:
             break_tag = 1
