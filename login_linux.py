@@ -127,7 +127,7 @@ def main():
             break
     while True:
         if ping():
-            pass
+            time.sleep(30);
         else:
             print_time()
             print(u"您已掉线正在重连...")
